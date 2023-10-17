@@ -1,0 +1,34 @@
+{
+    "name": "decide_if_we_should_use_this_resource",
+    "description": "Decide if we should use this educational resource with a student.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "factual": {
+                "type": "integer",
+                "description": "A 1-5 score representing how factual the resource is."
+            },
+            "well_written": {
+                "type": "integer",
+                "description": "A 1-5 score representing how well written the resource is."
+            },
+            "specific": {
+                "type": "integer",
+                "description": "A 1-5 score representing how specific the resource is."
+            },
+            "enhances_understanding": {
+                "type": "integer",
+                "description": "A 1-5 score representing if the resource enhances understanding."
+            },
+            "self_contained": {
+                "type": "integer",
+                "description": "A 1-5 score representing if the resource is self contained."
+            },
+            "overall": {
+                "type": "integer",
+                "description": "A 1-5 overall score representing the educational value of the resource to a student."
+            }
+        },
+        "required": ["factual", "well_written", "specific", "enhances_understanding", "self_contained", "overall"]
+    }
+}
