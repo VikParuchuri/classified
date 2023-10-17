@@ -10,9 +10,9 @@ import hashlib
 
 
 class CachedResponse(BaseDBModel, table=True):
-    __table_args__ = (UniqueConstraint("hash", "task_type", "model", "version", name="unique_hash_model_version"),)
+    __table_args__ = (UniqueConstraint("hash", "lens_type", "model", "version", name="unique_hash_model_version"),)
     hash: str = Field(index=True) # Hash of input prompt + functions
-    task_type: str # The type of task we're running
+    lens_type: str # The type of lens we're running
     messages: List[Dict] = Field(sa_column=Column(JSON), default=list())
     functions: str | None = Field(nullable=True)
     response: Dict = Field(sa_column=Column(JSON), default=dict())
@@ -26,14 +26,14 @@ def get_hash(messages: List[Dict], functions: str):
     return hashed
 
 
-def query_cached_response(task_type: str, messages: List[Dict], functions: str, version: int = 1) -> Optional[CachedResponse]:
+def query_cached_response(lens_type: str, messages: List[Dict], functions: str, version: int = 1) -> Optional[CachedResponse]:
     model = settings.CHAT_MODEL
     hashed = get_hash(messages, functions)
     with get_session() as db:
         query = db.execute(
             select(CachedResponse).where(
                 CachedResponse.hash == hashed,
-                CachedResponse.task_type == task_type,
+                CachedResponse.lens_type == lens_type,
                 CachedResponse.model == model,
                 CachedResponse.version == version,
             )
@@ -42,13 +42,13 @@ def query_cached_response(task_type: str, messages: List[Dict], functions: str, 
     return cached_response[0] if cached_response else None
 
 
-def save_cached_response(task_type: str, messages: List[Dict], functions: str, response: str, version: int = 1):
+def save_cached_response(lens_type: str, messages: List[Dict], functions: str, response: str, version: int = 1):
     model = settings.CHAT_MODEL
     hashed = get_hash(messages, functions)
     with get_session() as db:
         cached_response = CachedResponse(
             hash=hashed,
-            task_type=task_type,
+            lens_type=lens_type,
             messages=messages,
             functions=functions,
             response=response,

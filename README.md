@@ -1,13 +1,50 @@
 # Classified
 
-This repository will classify LLM training data by quality, similar to the phi paper.  It can be used to identify dataset quality, or filter a dataset.  By default, this will use gpt-3.5, but you can use gpt-4, or train your own custom classifier to score much larger datasets.
+This repository will classify LLM training data by quality, similar to the phi paper.  It can be used to summarize dataset quality, filter a dataset, or train custom classifiers.
+
+You can classify according to multiple *lenses* (see the `app/lenses` folder for examples).  Each lens rates the data in a different way, according to your needs. Currently, it supports the `learning_value` and `code_quality` objectives.  You can easily add your own lenses to classified.
 
 ## Install
 
-You will need Python 3.9+ (ideally 3.11).
+You'll need Python 3.9+ (ideally 3.11).
 
 - `git clone https://github.com/VikParuchuri/classified.git`
 - `cd classified`
 - `poetry install`
-- `alembic revision --autogenerate`
-- `alembic upgrade head`
+- `alembic upgrade head` - this will make a sqlite database
+
+## Configure
+
+You can override any settings in `app/settings.py` by setting an environment variable with the same name, or creating a `local.env` file with the key.
+
+- You will need to set your `OPENAI_KEY`.
+- You can also configure `CHAT_MODEL` - this will change the openai model used for rating.  It is `gpt-3.5-turbo` by default.  The model must be able to do function calling.
+
+# Usage
+
+## Summarize data quality
+
+This will give you an overview of how good a dataset is on multiple axes.  You can rate any dataset on the huggingface hub, or a local dataset file.
+
+Usage example:
+
+`python summary.py vikp/textbook_quality_programming markdown learning_value --max 10 --workers 3`
+
+    Lens: learning_value
+    Percentage of high quality data: 1.0
+    Raw scores: {'factual': 4.0, 'well_written': 4.3, 'specific': 3.6, 'enhances_understanding': 4.9, 'self_contained': 3.9, 'overall': 4.1}
+
+- You can use any dataset on huggingface hub, or a local dataset.  Here we use `vikp/textbook_quality_programming`.
+- You will need to specify which column you want to rate (`markdown` in the example).
+- You will need to specify which rating lenses you want to run (`learning_value` in the example). You can comma separate multiple lenses.
+- `--max` specifies the maximum number of examples you want to rate.  Data will be shuffled first.
+- `--workers` specifies the number of parallel workers to use.  This will be limited by your OpenAI rate limit.
+- `--stream` will stream the dataset from the hub instead of downloading it all.
+
+Check the help for additional cli options.
+
+# Adding new lenses
+
+You can add new lenses in the `app/lenses` folder.  You will need to create `system.jinja` for the system prompt, `prompt.jinja` for the main prompt, and `functions.json` to store the function call.  Look to the existing tasks for examples.
+
+You can then use the lenses in any of the scripts above.

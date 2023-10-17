@@ -39,15 +39,15 @@ def _chat_completion(messages, functions, model, max_tokens, temperature) -> str
         print(f"Unable to generate ChatCompletion response: {e}")
 
 
-def chat_completion(task_type, messages, functions=None, model=settings.CHAT_MODEL, max_tokens=512, temperature=.2, version=1, cache=True):
+def chat_completion(lens_type, messages, functions=None, model=settings.CHAT_MODEL, max_tokens=512, temperature=.2, version=1, cache=True):
     if cache:
-        response = query_cached_response(task_type, messages, functions, version)
+        response = query_cached_response(lens_type, messages, functions, version)
         if response:
             return response.response
 
     response = _chat_completion(messages, functions, model, max_tokens, temperature)
 
     if cache and response:
-        save_cached_response(task_type, messages, functions, response, version)
+        save_cached_response(lens_type, messages, functions, response, version)
 
     return response

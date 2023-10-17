@@ -74,21 +74,21 @@ def get_final_score(scores):
     return final_score
 
 
-def rate_data(resource: List[str], task_type: str, version: int = 1):
-    task_dir = os.path.join(settings.TASKS_DIR, task_type)
-    system_prompt = render_template("system", task_dir)
-    functions = load_functions(task_dir)
+def rate_data(resource: str, lens_type: str, version: int = 1):
+    lens_dir = os.path.join(settings.LENS_DIR, lens_type)
+    system_prompt = render_template("system", lens_dir)
+    functions = load_functions(lens_dir)
     labels = functions["parameters"]["required"]
     chunks = extract_chunks(resource)
     resource_scores = []
     for chunk in chunks:
-        user_prompt = render_template("prompt", task_dir, resource=chunk)
+        user_prompt = render_template("prompt", lens_dir, resource=chunk)
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ]
 
-        chat_response = chat_completion(task_type, messages, functions, version=version)
+        chat_response = chat_completion(lens_type, messages, functions, version=version)
         try:
             scores = json.loads(chat_response["function_call"]["arguments"])
             flat_scores = [scores[k] for k in labels]

@@ -8,7 +8,7 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
     # Path settings
     BASE_DIR: str = os.path.abspath(os.path.dirname(__file__))
-    TASKS_DIR: str = os.path.join(BASE_DIR, "tasks")
+    LENS_DIR: str = os.path.join(BASE_DIR, "lenses")
 
     # Database
     DATABASE_URL = f"sqlite:///{BASE_DIR}/db.sqlite3"
