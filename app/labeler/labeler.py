@@ -21,9 +21,13 @@ def extract_chunks(resource: str):
     # Gather chunks
     if len(tokenized) > total_chunks * settings.TOKENS_PER_CHUNK:
         chunk_offset = (len(tokenized) - (total_chunks * settings.TOKENS_PER_CHUNK)) // (total_chunks + 1)
+    else:
+        # Lower chunk count to document size
+        total_chunks = max(1, len(tokenized) // settings.TOKENS_PER_CHUNK)
 
     chunks = []
-    for i in range(chunk_offset, len(tokenized), chunk_offset + settings.TOKENS_PER_CHUNK):
+    i = chunk_offset # counter for token position
+    for chunk_idx in range(total_chunks):
         # find a smarter split boundary
         start = i
         end = i + settings.TOKENS_PER_CHUNK
@@ -36,7 +40,7 @@ def extract_chunks(resource: str):
             start += 1
             start_chunk = tokenizer.decode(tokenized[start:(start + 2)])
 
-        while end < (i + settings.TOKENS_PER_CHUNK + max_dist) and "\n" not in end_chunk:
+        while end < (i + settings.TOKENS_PER_CHUNK + max_dist) and end < len(tokenized) and "\n" not in end_chunk:
             end += 1
             end_chunk = tokenizer.decode(tokenized[(end - 2):end])
 
@@ -47,6 +51,7 @@ def extract_chunks(resource: str):
             chunk = chunk.rsplit("\n", 1)[0]
 
         chunks.append(chunk)
+        i += chunk_offset + settings.TOKENS_PER_CHUNK
     chunks = [c.strip() for c in chunks if len(c.strip()) > settings.TOKENS_PER_CHUNK // 4]
     return chunks
 
@@ -70,7 +75,11 @@ def load_function(template_dir):
 
 def get_final_score(scores):
     final_score = 0
-    if all([s >= 2 for s in scores]) and scores[-1] >= 2.5:
+    if all([s >= 2.5 for s in scores]) and scores[-1] >= 2.75:
+        final_score = 3
+    elif all([s >= 1.5 for s in scores]) and scores[-1] >= 2:
+        final_score = 2
+    elif all([s >= 0.5 for s in scores]) and scores[-1] >= 1:
         final_score = 1
     return final_score
 

@@ -18,28 +18,36 @@ You'll need Python 3.9+ (ideally 3.11).
 You can override any settings in `app/settings.py` by setting an environment variable with the same name, or creating a `local.env` file with the key.
 
 - You will need to set your `OPENAI_KEY`.
-- You can also configure `CHAT_MODEL` - this will change the openai model used for rating.  It is `gpt-3.5-turbo` by default.  The model must be able to do function calling.
+- You can also configure `CHAT_MODEL` - this will change the openai model used for rating.  It is `gpt-4` by default.  You can change it to `gpt-3.5-turbo` also.  GPT-4 seems to give the best results.
 
 # Usage
 
 ## Summarize data quality
 
-This will give you an overview of how good a dataset is on multiple axes.  You can rate any dataset on the huggingface hub, or a local dataset file.
+This will give you an overview of how good a dataset is on multiple axes.  You can rate any dataset on the huggingface hub, or a local dataset file.  It will print some stats to the console, and also dump them to a csv file.  The full scoring, including rationale given by the llm, will be available in jsonl files.
 
 Usage example:
 
-`python summary.py vikp/textbook_quality_programming markdown learning_value --max 10 --workers 3`
+`python summary.py vikp/textbook_quality_programming markdown textbook_quality --max 25 --workers 1 --stream`
 
-    Lens: learning_value
-    Percentage of high quality data: 1.0
-    Raw scores: {'factual': 4.0, 'well_written': 4.3, 'specific': 3.6, 'enhances_understanding': 4.9, 'self_contained': 3.9, 'overall': 4.1}
+    Evaluation results for vikp/textbook_quality_programming with gpt-3.5-turbo
+    Raw Scores
+    
+    Lens                overall
+    ----------------  ---------
+    textbook_quality          3
+    
+    Summary
+    Lens              Poor    Low    Medium    Good      Total
+    ----------------  ------  -----  --------  ------  -------
+    textbook_quality  0.00%   0.00%  4.00%     96.00%       25
 
 - You can use any dataset on huggingface hub, or a local dataset.  Here we use `vikp/textbook_quality_programming`.
 - You will need to specify which column you want to rate (`markdown` in the example).
-- You will need to specify which rating lenses you want to run (`learning_value` in the example). You can comma separate multiple lenses.
+- You will need to specify which rating lenses you want to run (`textbook_quality` in the example). You can comma separate multiple lenses to run them at once.
 - `--max` specifies the maximum number of examples you want to rate.  Data will be shuffled first.
-- `--workers` specifies the number of parallel workers to use.  This will be limited by your OpenAI rate limit.
-- `--stream` will stream the dataset from the hub instead of downloading it all.
+- `--workers` specifies the number of parallel workers to use.  This will be limited by your OpenAI rate limit.  With the default GPT-4 rate limit, you will want to set this to `1`.
+- `--stream` will stream the dataset from the huggingface hub instead of downloading it all.
 
 Check the help for additional cli options.
 

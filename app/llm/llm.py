@@ -1,14 +1,16 @@
 from tenacity import retry, wait_random_exponential, stop_after_attempt
 import openai
 
+from app.llm.exceptions import RateLimitError
 from app.llm.models import query_cached_response, save_cached_response
 from app.settings import settings
 from typing import List, Dict
+import time
 
 openai.api_key = settings.OPENAI_KEY
 
 
-@retry(wait=wait_random_exponential(multiplier=1, max=40), stop=stop_after_attempt(2))
+@retry(wait=wait_random_exponential(multiplier=1, min=30), stop=stop_after_attempt(3))
 def instruct_completion(prompt: str, model=settings.INSTRUCT_MODEL, max_tokens=settings.MAX_GENERATION_TOKENS, temperature=.2) -> str | None:
     try:
         response = openai.Completion.create(
@@ -19,11 +21,16 @@ def instruct_completion(prompt: str, model=settings.INSTRUCT_MODEL, max_tokens=s
         )
         response_message = response["choices"][0]["text"]
         return response_message
+    except openai.error.RateLimitError as e:
+        print(f"Rate limit error: {e}")
+        time.sleep(60)
+        # Raise error to retry
+        raise RateLimitError
     except Exception as e:
         print(f"Unable to generate Completion response: {e}")
 
 
-@retry(wait=wait_random_exponential(multiplier=1, min=30, max=120), stop=stop_after_attempt(2))
+@retry(wait=wait_random_exponential(multiplier=1, min=30), stop=stop_after_attempt(3))
 def _chat_completion(messages, functions, model, max_tokens, temperature) -> str | None:
     function_call = "auto"
     if len(functions) == 1:
@@ -43,8 +50,9 @@ def _chat_completion(messages, functions, model, max_tokens, temperature) -> str
         return response_message
     except openai.error.RateLimitError as e:
         print(f"Rate limit error: {e}")
-        time.sleep(30)
-        raise e
+        time.sleep(60)
+        # Raise error to retry
+        raise RateLimitError
     except Exception as e:
         print(f"Unable to generate ChatCompletion response: {e}")
 
