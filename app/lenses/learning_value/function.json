@@ -1,0 +1,38 @@
+{
+    "name": "decide_if_we_should_use_this_resource",
+    "description": "Decide if we should use this educational resource with a student.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "rationale": {
+                "type": "string",
+                "description": "A few sentences explaining background context, assumptions, and step-by-step thinking.  Keep it short and concise. No more than 80 words in total."
+            },
+            "factual": {
+                "type": "integer",
+                "description": "1-3 factuality score."
+            },
+            "well_written": {
+                "type": "integer",
+                "description": "1-3 well written score."
+            },
+            "specific": {
+                "type": "integer",
+                "description": "1-3 specificity score."
+            },
+            "enhances_understanding": {
+                "type": "integer",
+                "description": "1-3 enhance understanding score."
+            },
+            "self_contained": {
+                "type": "integer",
+                "description": "1-3 self contained score."
+            },
+            "overall": {
+                "type": "integer",
+                "description": "1-3 overall educational value score."
+            }
+        },
+        "required": ["rationale","factual", "well_written", "specific", "enhances_understanding", "self_contained", "overall"]
+    }
+}

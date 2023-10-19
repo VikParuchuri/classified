@@ -3,9 +3,9 @@ import os
 from collections import defaultdict
 
 from datasets import IterableDataset
-from tqdm.contrib.concurrent import process_map
-
 from app.labeler.tasks import run_rating_lenses
+from app.settings import settings
+import json
 
 import datasets
 
@@ -44,20 +44,26 @@ if __name__ == "__main__":
         averages = defaultdict(list)
         good_count = 0
         not_null = 0
-        for item in scores[lens]:
-            if item is None:
-                continue
-            for k, v in item.items():
-                averages[k].append(v)
+        data_fname = os.path.join(settings.DATA_DIR, f"{lens}.jsonl")
+        with open(data_fname, "w+") as f:
+            for item in scores[lens]:
+                if item is None:
+                    continue
+                summary = item["summary"]
+                data = item["data"]
+                for k, v in summary.items():
+                    averages[k].append(v)
 
-            not_null += 1
-            good_count += item["final"]
+                not_null += 1
+                good_count += summary["final"]
+
+                f.write(json.dumps(data) + "\n")
 
         averages = {k: round((sum(v) / len(v)) * 10) / 10 for k, v in averages.items()}
         del averages["final"]
 
         print(f"Lens: {lens}")
-        print(f"Fraction of high quality data: {good_count / not_null}")
+        print(f"Percentage of high quality data: {good_count / not_null:.2%}")
         print(f"Raw scores: {averages}")
 
 

@@ -1,0 +1,38 @@
+{
+    "name": "decide_if_we_should_use_this_resource",
+    "description": "Decide if we should use this educational resource with a student.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "rationale": {
+                "type": "string",
+                "description": "A few sentences explaining background context, assumptions, and step-by-step thinking. Keep it short and concise. No more than 80 words in total."
+            },
+            "correct": {
+                "type": "integer",
+                "description": "1-3 code correctness score."
+            },
+            "efficient": {
+                "type": "integer",
+                "description": "1-3 code efficiency score."
+            },
+            "readable": {
+                "type": "integer",
+                "description": "1-3 code readability score."
+            },
+            "complete": {
+                "type": "integer",
+                "description": "1-3 completeness score."
+            },
+            "written_by_expert": {
+                "type": "integer",
+                "description": "1-3 written by expert score."
+            },
+            "overall": {
+                "type": "integer",
+                "description": "1-3 overall score representing educational value of the code resource to a student."
+            }
+        },
+        "required": ["rationale","correct", "efficient", "readable", "complete", "written_by_expert", "overall"]
+    }
+}

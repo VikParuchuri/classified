@@ -2,6 +2,7 @@ private.py
 local.env
 .DS_Store
 .idea
+*.jsonl
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

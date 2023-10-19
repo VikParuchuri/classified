@@ -1,0 +1,18 @@
+{
+    "name": "evaluation",
+    "description": "Evaluation of the textbook extract.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "rationale": {
+                "type": "string",
+                "description": "A few sentences explaining background context, assumptions, and step-by-step thinking.  Keep it short and concise. No more than 80 words in total."
+            },
+            "overall": {
+                "type": "integer",
+                "description": "1-3 overall quality score."
+            }
+        },
+        "required": ["rationale", "overall"]
+    }
+}

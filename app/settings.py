@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     # Path settings
     BASE_DIR: str = os.path.abspath(os.path.dirname(__file__))
     LENS_DIR: str = os.path.join(BASE_DIR, "lenses")
+    DATA_DIR: str = os.path.join(BASE_DIR, "data")
 
     # Database
     DATABASE_URL = f"sqlite:///{BASE_DIR}/db.sqlite3"
@@ -16,7 +17,7 @@ class Settings(BaseSettings):
 
     # Chunks to rate
     TOKENS_PER_CHUNK: int = 2000
-    CHUNKS_PER_DOC: int = 3
+    CHUNKS_PER_DOC: int = 2
     MAX_SEARCH_DISTANCE: int = 100
 
     # LLM
@@ -24,6 +25,7 @@ class Settings(BaseSettings):
     OPENAI_BASE_URL: Optional[str] = None
     CHAT_MODEL: str = "gpt-3.5-turbo"
     INSTRUCT_MODEL: str = "gpt-3.5-turbo-instruct"
+    MAX_GENERATION_TOKENS: int = 256
 
     class Config:
         env_file = find_dotenv("local.env")
