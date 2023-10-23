@@ -2,7 +2,7 @@
 
 This repository will classify LLM training data by quality, similar to the phi paper.  It can be used to summarize dataset quality, filter a dataset, or train custom classifiers.
 
-You can classify according to multiple *lenses* (see the `app/lenses` folder for examples).  Each lens rates the data in a different way, according to your needs. Currently, it supports the `learning_value` and `code_quality` objectives.  You can easily add your own lenses to classified.
+You can classify according to multiple *lenses* (see the `app/lenses` folder for examples).  Each lens rates the data in a different way, according to your needs. Currently, it supports the `learning_value`, `code_quality`, and `textbook_quality` objectives.  You can easily add your own lenses to classified.
 
 ## Install
 
@@ -28,19 +28,19 @@ This will give you an overview of how good a dataset is on multiple axes.  You c
 
 Usage example:
 
-`python summary.py vikp/textbook_quality_programming markdown textbook_quality --max 25 --workers 1 --stream`
-
-    Evaluation results for vikp/textbook_quality_programming with gpt-3.5-turbo
+`python summary.py vikp/textbooks_grounded markdown textbook_quality --max 25 --workers 1 --stream`
+    
     Raw Scores
     
     Lens                overall
     ----------------  ---------
-    textbook_quality          3
+    textbook_quality        2.8
     
     Summary
     Lens              Poor    Low    Medium    Good      Total
     ----------------  ------  -----  --------  ------  -------
-    textbook_quality  0.00%   0.00%  4.00%     96.00%       25
+    textbook_quality  0.00%   0.00%  13.04%    86.96%       23
+
 
 - You can use any dataset on huggingface hub, or a local dataset.  Here we use `vikp/textbook_quality_programming`.
 - You will need to specify which column you want to rate (`markdown` in the example).

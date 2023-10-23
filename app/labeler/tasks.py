@@ -5,6 +5,10 @@ from tqdm import tqdm
 
 from app.labeler.labeler import rate_data
 
+import faulthandler
+import signal
+faulthandler.register(signal.SIGUSR1.value)
+
 
 def run_rating_lenses(lens_types: List[str], resources: List[str], version: int = 1, workers: int = 5):
     final_scores = {}
