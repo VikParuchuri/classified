@@ -18,12 +18,14 @@ def rate_single_dataset(dataset_name, args):
     else:
         dataset = datasets.load_from_disk(dataset_name)
 
+        # Grab a split if needed
+        if isinstance(datasets, datasets.DatasetDict):
+            dataset = dataset[args.split]
+
     if args.max is not None:
         dataset = dataset.shuffle(seed=42)
         if stream:
             dataset = dataset.take(args.max)
-        else:
-            dataset = dataset[:args.max]
 
     lens_names = args.lenses.split(",")
     field_names = args.data_columns.split(",")
@@ -32,7 +34,8 @@ def rate_single_dataset(dataset_name, args):
         resources = list([[item[f] for f in field_names] for item in dataset])
     else:
         resources = []
-        for i in range(len(dataset)):
+        max_rows = args.max if args.max is not None else len(dataset)
+        for i in range(max_rows):
             item = dataset[i]
             resources.append([item[f] for f in field_names])
 
