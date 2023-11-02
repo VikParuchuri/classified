@@ -6,12 +6,12 @@ from app.settings import settings
 
 engine = create_engine(
     settings.DATABASE_URL,
-    connect_args={"check_same_thread": False},
     # Ensure we only have one connection at a time active
     pool_size=1,
     max_overflow=0,
     pool_timeout=30,
-    poolclass=QueuePool
+    poolclass=QueuePool,
+    isolation_level='SERIALIZABLE'
 )
 
 SessionLocal = sessionmaker(

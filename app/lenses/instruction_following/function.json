@@ -1,0 +1,30 @@
+{
+    "name": "evaluation",
+    "description": "Evaluation of the output given the instructions.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "rationale": {
+                "type": "string",
+                "description": "A few sentences explaining background context, assumptions, and step-by-step thinking.  Keep it short and concise. No more than 80 words in total."
+            },
+            "follows_instructions": {
+                "type": "integer",
+                "description": "1-3 overall instruction following score."
+            },
+            "on_topic": {
+                "type": "integer",
+                "description": "1-3 overall on topic score."
+            },
+            "correct": {
+                "type": "integer",
+                "description": "1-3 overall correctness score."
+            },
+            "overall": {
+                "type": "integer",
+                "description": "1-3 overall quality score."
+            }
+        },
+        "required": ["rationale", "follows_instructions", "on_topic", "correct","overall"]
+    }
+}

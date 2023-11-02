@@ -2,7 +2,6 @@ import argparse
 import os
 from collections import defaultdict
 
-from datasets import IterableDataset
 from app.labeler.tasks import run_rating_lenses
 from app.settings import settings
 import json
@@ -26,12 +25,17 @@ def rate_single_dataset(dataset_name, args):
         else:
             dataset = dataset[:args.max]
 
-    if stream:
-        resources = list([item[args.data_column] for item in dataset])
-    else:
-        resources = list(dataset[args.data_column])
-
     lens_names = args.lenses.split(",")
+    field_names = args.data_columns.split(",")
+
+    if stream:
+        resources = list([[item[f] for f in field_names] for item in dataset])
+    else:
+        resources = []
+        for i in range(len(dataset)):
+            item = dataset[i]
+            resources.append([item[f] for f in field_names])
+
     scores = run_rating_lenses(lens_names, resources, version=args.version, workers=args.workers)
     table_data = []
     print(f"{dataset_name} results")
@@ -81,7 +85,7 @@ def rate_single_dataset(dataset_name, args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Summarize the quality of a dataset.")
     parser.add_argument("dataset", help="Input resources to score, as a huggingface dataset.  Either a path to a local dataset, or a huggingface dataset name. Comma separate to run multiple.", type=str)
-    parser.add_argument("data_column", help="The column name to look for the data under.", default="markdown")
+    parser.add_argument("data_columns", help="The column name(s) to look for the data under, comma separated.", default="markdown")
     parser.add_argument("lenses", help="The lenses to score the data on, as a comma-separated list.", type=str, default="textbook_quality")
     parser.add_argument("--max", type=int, default=None, help="Maximum number of resources to score.  This will sample randomly.")
     parser.add_argument("--workers", type=int, default=1, help="Number of workers to use")

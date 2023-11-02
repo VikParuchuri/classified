@@ -26,9 +26,9 @@ def get_hash(messages: List[Dict], functions: str):
     return hashed
 
 
-def query_cached_response(lens_type: str, messages: List[Dict], functions: str, version: int = 1) -> Optional[CachedResponse]:
-    model = settings.CHAT_MODEL
-    hashed = get_hash(messages, functions)
+def query_cached_response(lens_type: str, messages: List[Dict], functions: List[Dict] | None, model: str, version: int = 1) -> Optional[CachedResponse]:
+    function_str = str(functions)
+    hashed = get_hash(messages, function_str)
     with get_session() as db:
         query = db.execute(
             select(CachedResponse).where(
@@ -42,9 +42,9 @@ def query_cached_response(lens_type: str, messages: List[Dict], functions: str, 
     return cached_response[0] if cached_response else None
 
 
-def save_cached_response(lens_type: str, messages: List[Dict], functions: str, response: str, version: int = 1):
-    model = settings.CHAT_MODEL
-    hashed = get_hash(messages, functions)
+def save_cached_response(lens_type: str, messages: List[Dict], functions: List[Dict] | None, response: str, model: str, version: int = 1):
+    function_str = str(functions)
+    hashed = get_hash(messages, function_str)
     with get_session() as db:
         cached_response = CachedResponse(
             hash=hashed,

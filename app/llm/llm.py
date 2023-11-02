@@ -11,13 +11,14 @@ openai.api_key = settings.OPENAI_KEY
 
 
 @retry(wait=wait_random_exponential(multiplier=1, min=30), stop=stop_after_attempt(3))
-def instruct_completion(prompt: str, model=settings.INSTRUCT_MODEL, max_tokens=settings.MAX_GENERATION_TOKENS, temperature=.2) -> str | None:
+def instruct_completion(prompt: str, model, max_tokens=settings.MAX_GENERATION_TOKENS, temperature=.2) -> str | None:
     try:
         response = openai.Completion.create(
             model=model,
             prompt=prompt,
             max_tokens=max_tokens,
             temperature=temperature,
+            timeout=settings.OPENAI_TIMEOUT,
         )
         response_message = response["choices"][0]["text"]
         return response_message
@@ -45,6 +46,7 @@ def _chat_completion(messages, functions, model, max_tokens, temperature) -> str
             function_call=function_call,
             max_tokens=max_tokens,
             temperature=temperature,
+            timeout=settings.OPENAI_TIMEOUT,
         )
         response_message = response["choices"][0]["message"]
         return response_message
@@ -59,13 +61,13 @@ def _chat_completion(messages, functions, model, max_tokens, temperature) -> str
 
 def chat_completion(lens_type, messages, functions: None | List[Dict] = None, model=settings.CHAT_MODEL, max_tokens=settings.MAX_GENERATION_TOKENS, temperature=.2, version=1, cache=True):
     if cache:
-        response = query_cached_response(lens_type, messages, functions, version)
+        response = query_cached_response(lens_type, messages, functions, model, version)
         if response:
             return response.response
 
     response = _chat_completion(messages, functions, model, max_tokens, temperature)
 
     if cache and response:
-        save_cached_response(lens_type, messages, functions, response, version)
+        save_cached_response(lens_type, messages, functions, response, model, version)
 
     return response

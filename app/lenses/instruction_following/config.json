@@ -1,0 +1,4 @@
+{
+  "input_fields": ["instruction", "output"],
+  "type": "instruct"
+}
