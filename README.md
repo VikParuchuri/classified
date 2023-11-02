@@ -4,11 +4,14 @@ Classified helps you classify LLM pretraining or instruction data by quality.  I
 
 You can classify according to multiple *lenses* (see the `app/lenses` folder for examples).  Each lens rates the data in a different way, according to your needs. Currently, it supports these lenses:
 
-- `instruction_following` - how well outputs follow instructions
+**Pretraining** (single field)
 - `code_quality` - quality of code pretraining data
-- `textbook_quality` - quality of textbook pretraining data
-- `learning_value` - learning value of pretraining data (similar to phi)
-- `textbook_depth` - depth/specificity of textbook pretraining data
+- `textbook_quality` - quality of textbook-like data
+- `learning_value` - learning value of textbook-like data (similar to phi)
+- `textbook_depth` - depth/specificity of textbook-like data
+
+**Instruct** (instruction/output pairs)
+- `instruction_following` - how well outputs follow instructions
 
 By default, GPT-4 is used to do the rating.  You can also use GPT-3.5-turbo, which is faster but less accurate.  Soon, you'll also be able to train custom models to do the rating.
 
